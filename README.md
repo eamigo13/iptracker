@@ -72,8 +72,7 @@ Top IPs Benchmark: 0.42 ms
 
 #### 100,000,000 Requests
 ```
-Handle Request Benchmark: 0.11 ms/request
-Top IPs Benchmark: 0.42 ms
+Pending local run.  Will probably take around 3 hours.  I'll post the results once it's finished running.
 ```
 
 ## Write Up
