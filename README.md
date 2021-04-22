@@ -1,12 +1,10 @@
-# README
-
 This file contains instructions on how to run my solution.  It also includes benchmark information.  The [Write Up](#write-up) is found at the bottom of this file.
 
 ## Run
 
-My solution uses Redis as an in-memory storage solution.  In order to run, please make sure you system is running redis and that you also have the [redis](https://github.com/redis/redis-rb) gem installed.
+My solution uses Redis as an in-memory storage solution.  In order to run, please make sure your system is running redis and that you have the [redis](https://github.com/redis/redis-rb) gem installed.
 
-Addittionally, I use the [faker](https://github.com/faker-ruby/faker) gem to simulate IP addresses.  Please make sure this gem is installed as well.
+Additionally, I use the [faker](https://github.com/faker-ruby/faker) gem to simulate IP addresses.  Please make sure this gem is installed as well.
 
 Once your system is configured, run the following to load a ruby interpreter with the `IPTracker` class pre-loaded.
 
