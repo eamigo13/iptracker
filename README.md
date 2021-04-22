@@ -83,17 +83,17 @@ I'd look into what error handling I need to include.  For example, what happens 
 
 
 ### What is the runtime complexity of each function?
-`handle_request` implements the redis `zincrby` method which has a time complexity of `O(log(N))` where N is the number of elements in the sorted.
+`handle_request` implements the redis `zincrby` method which has a time complexity of `O(log(N))` where N is the number of elements in the sorted set.
 
 `top_ips` implements the redis `zrevrange` method which has a time complexity of `O(log(N)+M)` with N being the number of elements in the sorted set and M the number of elements returned.
 
 `clear` implements the redis `del` method which.  We only delete one key which has a time complexity of O(1).
 
 ### How does your code work?
-My code takes advantage of redis sorted sets to maintain a list of unique IPs and a count of how many times each IP has handled.  Redis is an efficient in-memory storage solution that allows us to track large amounts of data in a speedy and efficient manner.
+My code takes advantage of redis sorted sets to maintain a list of unique IPs and a count of how many times each IP has been handled.  Redis is an efficient in-memory storage solution that allows us to track large amounts of data in a speedy and efficient manner.
 
 ### What other approaches did you decide not to pursue?
 I thought about writing my own in memory storage solution, but decided that taking advantage of Redis would be quicker, easier to mantain, and would probably be faster than any custom solution I could write.
 
 ### How would you test this?
-I've written a test function into the code.  Please refrerence the [Benchmarks](#benchmarks) section
+I've written a test function into the code.  Please refrerence the [Benchmarks](#benchmarks) section.
