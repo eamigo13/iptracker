@@ -1,5 +1,4 @@
 require 'singleton'
-require 'faker'
 require './ip_address.rb'
 
 class IPTracker

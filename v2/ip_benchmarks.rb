@@ -1,3 +1,4 @@
+require 'faker'
 require './ip_tracker.rb'
 
 class IPBenchmarks
