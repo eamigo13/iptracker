@@ -1,15 +1,9 @@
-This file contains instructions on how to run my solution.  It also includes benchmark information.  The [Write Up](#write-up) is found at the bottom of this file.
+This file contains instructions on how to run my solution.  It also includes benchmark information.  The [Write Up](#write-up) is found at the bottom of this file.  Note, this readme includes updated code based on the feedback I received.  The new code is in the v2 directory and the old code is in the lib directory.
 
 ## Run
 
-My solution uses Redis as an in-memory storage solution.  In order to run, please make sure your system is running redis and that you have the [redis](https://github.com/redis/redis-rb) gem installed.
-
-Additionally, I use the [faker](https://github.com/faker-ruby/faker) gem to simulate IP addresses.  Please make sure this gem is installed as well.
-
-Once your system is configured, run the following to load a ruby interpreter with the `IPTracker` class pre-loaded.
-
 ```
-irb -r ./lib/ip_tracker.rb
+irb -r ./v2/ip_tracker.rb
 ```
 
 ### Handle Requests
@@ -19,21 +13,11 @@ This will track that a request from the given IP address has been received.
 IPTracker.instance.handle_request('147.182.82.67')
 ```
 
-### Top Requests
+### Top 100
 
 To return a a list of IP addresses with the most requests, run
 ```ruby
-IPTracker.instance.top_ips
-```
-
-You can customize how many IP addresses you want returned
-```ruby
-IPTracker.instance.top_ips(50)
-```
-
-You can also request that the number of requests for each IP is returned
-```ruby
-IPTracker.instance.top_ips(with_counts: true)
+IPTracker.instance.top100
 ```
 
 ### Clear Tracker
@@ -45,54 +29,41 @@ IPTracker.instance.clear
 
 ## Benchmarks
 
-In order to run a benchmark test, run
+In order to run a benchmark test, run the following in IRB
 ```ruby
-IPTracker.instance.test
-```
-By default, this will simulate 100,000 requests and will output the benchmarks for the `handle_request` and `top_ips` method.
-
-Additionally, you can specify the number of simulated requests
-```ruby
-IPTracker.instance.test(100)
+require './v2/ip_benchmarks.rb'
+bench = IPBenchmarks.new(1000000)
+bench.run_benchmarks
 ```
 
 ### Benchmark results
 
-#### 100,000 Requests
-```
-Handle Request Benchmark: 0.1 ms/request
-Top IPs Benchmark: 0.4 ms
-```
-
 #### 1,000,000 Requests
 ```
-Handle Request Benchmark: 0.11 ms/request
-Top IPs Benchmark: 0.42 ms
-```
-
-#### 100,000,000 Requests
-```
-Pending local run.  Will probably take around 3 hours.  I'll post the results once it's finished running.
+Handle Request Benchmark: 0.0031 ms/request
+Top 100 Benchmark: 0.001 ms
 ```
 
 ## Write Up
 
 ### What would you do differently if you had more time?
-I'd look into what error handling I need to include.  For example, what happens if an IP address is passed in with trailing spaces?  Should I handle it as a unique IP, or eliminate the trailing whitespace?  Should I validate that the IP addresses given are valid IPs?
+I'd be curious in creating a method that allows us to get the top ips more dynamically.  i.e. how could I get the top 200 instead of the top 100?
 
 
 ### What is the runtime complexity of each function?
-`handle_request` implements the redis `zincrby` method which has a time complexity of `O(log(N))` where N is the number of elements in the sorted set.
+`handle_request` uses a hash key lookup (which is indexed) so has O(1) complexity.  In addition, it potentially resorts the top100 useing the ruby sort_by method which has a O(n log n) time complexity
 
-`top_ips` implements the redis `zrevrange` method which has a time complexity of `O(log(N)+M)` with N being the number of elements in the sorted set and M the number of elements returned.
+`top_100` just return a presorted arrray so has a time complexity of O(1)
 
-`clear` implements the redis `del` method which.  We only delete one key which has a time complexity of O(1).
+`clear` implements resets some variables to an empty hash and empty array which has a time complexity of O(1).
 
 ### How does your code work?
-My code takes advantage of redis sorted sets to maintain a list of unique IPs and a count of how many times each IP has been handled.  Redis is an efficient in-memory storage solution that allows us to track large amounts of data in a speedy and efficient manner.
+My code uses a ruby hash to maintain a dictionary with the ip address as a key and an IPAddress object (which includes request count) as an object.  This allows for quick and efficient lookups.
+
+For the top100, I maintain an array of IPAddress objects.  After each request is handled, I check if the most recent ip has a higher request count than the lowest top100.  If its higher, I replace the lowest top100 with the current IP.
 
 ### What other approaches did you decide not to pursue?
-I thought about writing my own in memory storage solution, but decided that taking advantage of Redis would be quicker, easier to mantain, and would probably be faster than any custom solution I could write.
+I used this approach instead of using Redis as directed.
 
 ### How would you test this?
-I've written a test function into the code.  Please refrerence the [Benchmarks](#benchmarks) section.
+I've written a benchmark class into the code.  Please refrerence the [Benchmarks](#benchmarks) section.
